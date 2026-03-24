@@ -1,4 +1,4 @@
-name = "ai-image-bg-api"
+name = "ai-image-background"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
