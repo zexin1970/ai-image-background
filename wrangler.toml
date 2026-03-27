@@ -1,6 +1,7 @@
-name = "ai-image-bg-api"
-main = "worker.js"
-compatibility_date = "2024-01-01"
+name = "ai-image-background"
+pages_build_output_dir = "out"
 
-[env.production]
-vars = { }
+[[d1_databases]]
+binding = "DB"
+database_name = "ai-image-bg-users"
+database_id = "e96c94a7-3841-44f7-aacb-7fcd974c534b"
