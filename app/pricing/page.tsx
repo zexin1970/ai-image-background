@@ -4,17 +4,18 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
 // PayPal JS SDK 类型声明
+interface PayPalButtonConfig {
+  style?: object;
+  createOrder?: () => Promise<string>;
+  createSubscription?: (data: unknown, actions: { subscription: { create: (opts: object) => Promise<string> } }) => Promise<string>;
+  onApprove?: (data: { orderID: string; subscriptionID?: string }) => Promise<void>;
+  onError?: (err: unknown) => void;
+}
+
 declare global {
   interface Window {
     paypal?: {
-      Buttons: (config: {
-        style?: object;
-        createOrder?: () => Promise<string>;
-        onApprove?: (data: { orderID: string }) => Promise<void>;
-        onError?: (err: unknown) => void;
-        createSubscription?: (data: unknown, actions: { subscription: { create: (opts: object) => Promise<string> } }) => Promise<string>;
-        onApprove?: (data: { subscriptionID?: string; orderID?: string }) => Promise<void>;
-      }) => { render: (el: HTMLElement) => void };
+      Buttons: (config: PayPalButtonConfig) => { render: (el: HTMLElement) => void };
     };
   }
 }
