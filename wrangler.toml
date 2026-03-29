@@ -3,5 +3,5 @@ pages_build_output_dir = "out"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "ai-image-bg-users"
-database_id = "e96c94a7-3841-44f7-aacb-7fcd974c534b"
+database_name = "ai-image-background-users"
+database_id = "60ed1a7a-9521-437c-b873-02b7022e7ef0"
