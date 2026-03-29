@@ -21,6 +21,32 @@ interface UsageInfo {
   credits: number | null;
 }
 
+// 游客本地额度：每月最多 3 次免费下载（低清预览）
+const GUEST_MONTHLY_LIMIT = 3;
+
+function getGuestUsage(): { count: number; month: string } {
+  try {
+    const raw = localStorage.getItem("guest_usage");
+    if (raw) return JSON.parse(raw) as { count: number; month: string };
+  } catch {}
+  return { count: 0, month: "" };
+}
+
+function incrementGuestUsage(): number {
+  const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  const prev = getGuestUsage();
+  const count = prev.month === currentMonth ? prev.count + 1 : 1;
+  localStorage.setItem("guest_usage", JSON.stringify({ count, month: currentMonth }));
+  return count;
+}
+
+function getRemainingGuestDownloads(): number {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const { count, month } = getGuestUsage();
+  const used = month === currentMonth ? count : 0;
+  return Math.max(0, GUEST_MONTHLY_LIMIT - used);
+}
+
 export default function Home() {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [usage, setUsage] = useState<UsageInfo | null>(null);
@@ -29,6 +55,7 @@ export default function Home() {
   const [processedUrl, setProcessedUrl] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [guestLimitReached, setGuestLimitReached] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // 拉取用量信息
@@ -121,7 +148,16 @@ export default function Home() {
   // T06: 下载前调 /api/download 检查额度
   const handleDownload = async () => {
     if (!user) {
-      setShowLoginPrompt(true);
+      const remaining = getRemainingGuestDownloads();
+      if (remaining <= 0) {
+        // 游客次数已用完，强制登录（不能跳过）
+        setGuestLimitReached(true);
+        setShowLoginPrompt(true);
+      } else {
+        // 还有剩余次数，弹引导弹窗（可跳过）
+        setGuestLimitReached(false);
+        setShowLoginPrompt(true);
+      }
       return;
     }
 
@@ -252,29 +288,46 @@ export default function Home() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-8 max-w-md mx-4 shadow-xl">
               <div className="text-center mb-6">
-                <div className="text-4xl mb-3">✨</div>
-                <h2 className="text-xl font-bold text-gray-900">Get free HD downloads</h2>
+                <div className="text-4xl mb-3">{guestLimitReached ? "🔒" : "✨"}</div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {guestLimitReached ? "Free downloads used up" : "Get free HD downloads"}
+                </h2>
                 <p className="text-gray-500 mt-2 text-sm">
-                  Sign in with Google — it&apos;s free. <br />
-                  Get <span className="font-semibold text-blue-600">20 HD downloads/month</span>, no watermark.
+                  {guestLimitReached ? (
+                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get 20 HD downloads/month for free.</>
+                  ) : (
+                    <>Sign in with Google — it&apos;s free. <br />
+                    Get <span className="font-semibold text-blue-600">20 HD downloads/month</span>, no watermark.</>
+                  )}
                 </p>
               </div>
               <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowLoginPrompt(false);
-                    // 游客选择跳过登录，直接下载预览图（低清）
-                    if (processedUrl) {
-                      const a = document.createElement("a");
-                      a.href = processedUrl;
-                      a.download = `${selectedFile?.name.replace(/\.[^/.]+$/, "") ?? "image"}_removed_bg.png`;
-                      a.click();
-                    }
-                  }}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
-                >
-                  Maybe later
-                </button>
+                {!guestLimitReached && (
+                  <button
+                    onClick={() => {
+                      setShowLoginPrompt(false);
+                      // 游客跳过登录，扣减本地次数后下载预览图（低清）
+                      if (processedUrl) {
+                        incrementGuestUsage();
+                        const a = document.createElement("a");
+                        a.href = processedUrl;
+                        a.download = `${selectedFile?.name.replace(/\.[^/.]+$/, "") ?? "image"}_removed_bg.png`;
+                        a.click();
+                      }
+                    }}
+                    className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
+                  >
+                    Maybe later ({getRemainingGuestDownloads()} left)
+                  </button>
+                )}
+                {guestLimitReached && (
+                  <button
+                    onClick={() => setShowLoginPrompt(false)}
+                    className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
                   onClick={() => login()}
                   className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
