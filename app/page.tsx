@@ -261,7 +261,16 @@ export default function Home() {
               </div>
               <div className="flex gap-3">
                 <button
-                  onClick={() => setShowLoginPrompt(false)}
+                  onClick={() => {
+                    setShowLoginPrompt(false);
+                    // 游客选择跳过登录，直接下载预览图（低清）
+                    if (processedUrl) {
+                      const a = document.createElement("a");
+                      a.href = processedUrl;
+                      a.download = `${selectedFile?.name.replace(/\.[^/.]+$/, "") ?? "image"}_removed_bg.png`;
+                      a.click();
+                    }
+                  }}
                   className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
                 >
                   Maybe later
