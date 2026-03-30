@@ -221,10 +221,10 @@ export default function Home() {
             {user ? (
               <>
                 {/* T09: 用量进度条 */}
-                {usage && usage.limit !== null && (
+                {usage && (usage.limit !== null || usage.credits !== null) && (
                   <UsageBar
                     used={usage.used}
-                    limit={usage.limit}
+                    limit={usage.limit ?? 0}
                     plan={usage.plan}
                     credits={usage.credits}
                   />
