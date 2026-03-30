@@ -149,18 +149,27 @@ export default function PricingPage() {
           return data.order_id;
         },
         onApprove: async (data: { orderID: string }) => {
-          const res = await fetch("/api/paypal/capture-order", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ order_id: data.orderID, user_id: user!.id, pack: selectedPack }),
-          });
-          const result = await res.json() as { success: boolean; credits_added: number };
-          if (result.success) {
-            setPayStatus("success");
-            setPayMessage(`✅ ${result.credits_added} credits added! Check your email for confirmation.`);
-          } else {
+          console.log("Payment approved, orderID:", data.orderID);
+          try {
+            const res = await fetch("/api/paypal/capture-order", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ order_id: data.orderID, user_id: user!.id, pack: selectedPack }),
+            });
+            console.log("Capture response status:", res.status);
+            const result = await res.json() as { success: boolean; credits_added: number };
+            console.log("Capture result:", result);
+            if (result.success) {
+              setPayStatus("success");
+              setPayMessage(`✅ ${result.credits_added} credits added! Check your email for confirmation.`);
+            } else {
+              setPayStatus("error");
+              setPayMessage("Payment failed. Please try again.");
+            }
+          } catch (error) {
+            console.error("Capture error:", error);
             setPayStatus("error");
-            setPayMessage("Payment failed. Please try again.");
+            setPayMessage("Payment processing failed: " + String(error));
           }
         },
         onError: () => {
