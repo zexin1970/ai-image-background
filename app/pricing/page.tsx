@@ -105,7 +105,7 @@ export default function PricingPage() {
   // 加载 PayPal SDK
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&vault=true&intent=subscription&currency=USD`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
     script.setAttribute("data-sdk-integration-source", "button-factory");
     script.onload = () => {
       console.log("PayPal SDK loaded");
