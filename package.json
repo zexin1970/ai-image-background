@@ -9,7 +9,7 @@
   "packageManager": "yarn@1.22.22",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && bash postbuild.sh",
     "start": "next start",
     "lint": "next lint"
   },
