@@ -107,19 +107,35 @@ export default function PricingPage() {
     const script = document.createElement("script");
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&vault=true&intent=subscription&currency=USD`;
     script.setAttribute("data-sdk-integration-source", "button-factory");
-    script.onload = () => setSdkLoaded(true);
+    script.onload = () => {
+      console.log("PayPal SDK loaded");
+      setSdkLoaded(true);
+    };
+    script.onerror = () => {
+      console.error("Failed to load PayPal SDK");
+      setPayStatus("error");
+      setPayMessage("Failed to load payment system");
+    };
     document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
+    return () => { 
+      try { document.body.removeChild(script); } catch {}
+    };
   }, []);
 
   // 渲染 PayPal 按钮
   useEffect(() => {
-    if (!sdkLoaded || !window.paypal) return;
+    if (!sdkLoaded || !window.paypal) {
+      console.log("SDK not ready:", { sdkLoaded, hasPaypal: !!window.paypal });
+      return;
+    }
+
+    console.log("Rendering PayPal buttons");
 
     // --- Credits 按钮 ---
     if (creditsBtnRef.current) {
       creditsBtnRef.current.innerHTML = "";
-      window.paypal.Buttons({
+      try {
+        window.paypal.Buttons({
         style: { layout: "vertical", color: "blue", shape: "rect", label: "pay" },
         createOrder: async () => {
           if (!user) { alert("Please sign in first to purchase credits."); throw new Error("Not signed in"); }
@@ -152,12 +168,18 @@ export default function PricingPage() {
           setPayMessage("Payment error. Please try again.");
         },
       }).render(creditsBtnRef.current);
+      } catch (error) {
+        console.error("Failed to render Credits button:", error);
+        setPayStatus("error");
+        setPayMessage("Failed to load payment button");
+      }
     }
 
     // --- Pro 订阅按钮 ---
     if (proBtnRef.current) {
       proBtnRef.current.innerHTML = "";
-      window.paypal.Buttons({
+      try {
+        window.paypal.Buttons({
         style: { layout: "vertical", color: "gold", shape: "rect", label: "subscribe" },
         createSubscription: async (_data: unknown, actions: { subscription: { create: (opts: object) => Promise<string> } }) => {
           if (!user) { alert("Please sign in first to subscribe."); throw new Error("Not signed in"); }
@@ -175,6 +197,9 @@ export default function PricingPage() {
           setPayMessage("Subscription error. Please try again.");
         },
       }).render(proBtnRef.current);
+      } catch (error) {
+        console.error("Failed to render Pro button:", error);
+      }
     }
   }, [sdkLoaded, selectedPack, user]);
 
