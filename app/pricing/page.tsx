@@ -161,7 +161,10 @@ export default function PricingPage() {
             console.log("Capture result:", result);
             if (result.success) {
               setPayStatus("success");
-              setPayMessage(`✅ ${result.credits_added} credits added! Check your email for confirmation.`);
+              setPayMessage(`✅ ${result.credits_added} credits added! Redirecting to home...`);
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 2000);
             } else {
               setPayStatus("error");
               setPayMessage("Payment failed. Please try again.");
