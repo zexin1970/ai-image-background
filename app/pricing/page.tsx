@@ -170,66 +170,74 @@ export default function PricingPage() {
   }, [sdkLoaded, selectedPack, user]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-16 max-w-6xl">
+    <main className="min-h-screen bg-tech-black relative overflow-hidden">
+      {/* 动态网格背景 */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(42,42,56,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(42,42,56,0.3)_1px,transparent_1px)] bg-[size:50px_50px] animate-[grid_60s_linear_infinite]" />
+      
+      {/* 顶部光晕 */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-neon-green/10 blur-[120px] rounded-full" />
+      
+      <div className="container mx-auto px-4 py-16 max-w-6xl relative z-10">
 
         {/* Header */}
-        <div className="text-center mb-16">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 mb-8 transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center mb-20">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-neon-green mb-12 transition-colors group">
+            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to app
           </Link>
-          <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">Simple, transparent pricing</h1>
-          <p className="text-gray-600 text-xl max-w-2xl mx-auto">Start free. Upgrade when you need more.</p>
+          <h1 className="text-6xl font-bold text-white mb-6 tracking-tight">
+            Choose <span className="text-neon-green">Your</span> Plan
+          </h1>
+          <p className="text-gray-400 text-xl">Simple pricing. No hidden fees.</p>
           {!user && (
-            <div className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-amber-50 border border-amber-200 rounded-full text-amber-800 text-sm font-medium">
+            <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 bg-electric-orange/10 border border-electric-orange/30 rounded-full text-electric-orange backdrop-blur-sm">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              Please <Link href="/" className="underline font-semibold hover:text-amber-900">sign in</Link> before purchasing
+              <span className="font-medium">Please <Link href="/" className="underline font-bold hover:text-white transition-colors">sign in</Link> before purchasing</span>
             </div>
           )}
         </div>
 
         {/* 支付状态提示 */}
         {payStatus !== "idle" && (
-          <div className={`mb-8 p-4 rounded-xl text-center font-medium ${
-            payStatus === "success" ? "bg-green-50 text-green-700 border border-green-200" :
-            payStatus === "error" ? "bg-red-50 text-red-700 border border-red-200" :
-            "bg-blue-50 text-blue-700 border border-blue-200"
+          <div className={`mb-10 p-5 rounded-2xl text-center font-semibold backdrop-blur-sm border ${
+            payStatus === "success" ? "bg-neon-green/10 text-neon-green border-neon-green/30" :
+            payStatus === "error" ? "bg-electric-orange/10 text-electric-orange border-electric-orange/30" :
+            "bg-tech-gray/60 text-gray-300 border-border-gray"
           }`}>
             {payStatus === "processing" ? "⏳ Processing payment..." : payMessage}
           </div>
         )}
 
         {/* Plans */}
-        <div className="grid md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 mb-24 max-w-4xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-white rounded-3xl p-8 shadow-lg border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1
-                ${plan.highlight ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-200"}`}
+              className={`relative bg-tech-gray/60 backdrop-blur-xl rounded-3xl p-8 border transition-all duration-300 hover:-translate-y-2 group
+                ${plan.highlight ? "border-neon-green/50 shadow-[0_0_40px_rgba(0,255,136,0.2)]" : "border-border-gray hover:border-neon-green/30"}`}
             >
               {plan.badge && (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold px-6 py-2 rounded-full shadow-lg">
-                  {plan.badge}
-                </span>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neon-green to-green-400 text-tech-black text-sm font-bold px-6 py-2 rounded-full shadow-lg">
+                  🔥 {plan.badge}
+                </div>
               )}
 
               <div className="mb-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h2>
+                <h2 className="text-2xl font-bold text-white mb-3">{plan.name}</h2>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-500 text-base">{plan.period}</span>
+                  <span className="text-5xl font-bold text-white">{plan.price}</span>
+                  <span className="text-gray-400 text-lg">{plan.period}</span>
                 </div>
               </div>
 
               <ul className="space-y-4 mb-10">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm text-gray-700">
-                    <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <li key={f} className="flex items-start gap-3 text-gray-300 group-hover:text-white transition-colors">
+                    <svg className="w-5 h-5 text-neon-green flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>{f}</span>
@@ -241,7 +249,7 @@ export default function PricingPage() {
               {plan.paypalId === null && (
                 <a
                   href={plan.ctaHref}
-                  className={`block w-full text-center py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 ${plan.ctaStyle}`}
+                  className="block w-full text-center py-4 rounded-xl font-bold text-white border-2 border-white/20 hover:border-neon-green hover:bg-neon-green/10 transition-all duration-200"
                 >
                   {plan.cta}
                 </a>
@@ -255,10 +263,10 @@ export default function PricingPage() {
                       <button
                         key={pack}
                         onClick={() => setSelectedPack(pack)}
-                        className={`flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all duration-200 ${
+                        className={`flex-1 py-3 rounded-xl font-bold border-2 transition-all duration-200 ${
                           selectedPack === pack
-                            ? "border-blue-600 bg-blue-50 text-blue-700 shadow-md"
-                            : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                            ? "border-neon-green bg-neon-green text-tech-black shadow-[0_0_20px_rgba(0,255,136,0.4)]"
+                            : "border-border-gray text-gray-400 hover:border-neon-green/50 hover:text-white"
                         }`}
                       >
                         {pack === "20" ? "20 for $2.9" : "50 for $5.9"}
@@ -266,7 +274,7 @@ export default function PricingPage() {
                     ))}
                   </div>
                   <div ref={creditsBtnRef} className="min-h-[45px]">
-                    {!sdkLoaded && <div className="text-center text-gray-400 text-sm py-3">Loading payment...</div>}
+                    {!sdkLoaded && <div className="text-center text-gray-500 text-sm py-3">Loading payment...</div>}
                   </div>
                 </div>
               )}
@@ -276,8 +284,8 @@ export default function PricingPage() {
 
         {/* FAQ */}
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
-          <div className="space-y-5">
+          <h2 className="text-4xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
+          <div className="space-y-4">
             {[
               {
                 q: "Do credits expire?",
@@ -296,9 +304,9 @@ export default function PricingPage() {
                 a: "Free users get 5 downloads per month. Need more? Purchase a credits pack that never expires.",
               },
             ].map(({ q, a }) => (
-              <div key={q} className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all duration-200">
-                <p className="font-semibold text-gray-900 mb-2 text-base">{q}</p>
-                <p className="text-gray-600 text-sm leading-relaxed">{a}</p>
+              <div key={q} className="bg-tech-gray/60 backdrop-blur-xl rounded-2xl p-6 border border-border-gray hover:border-neon-green/30 transition-all duration-200">
+                <p className="font-bold text-white mb-2 text-lg">{q}</p>
+                <p className="text-gray-400 leading-relaxed">{a}</p>
               </div>
             ))}
           </div>
