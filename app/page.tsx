@@ -205,22 +205,28 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
+    <main className="min-h-screen bg-tech-black relative overflow-hidden">
+      {/* 动态网格背景 */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(42,42,56,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(42,42,56,0.3)_1px,transparent_1px)] bg-[size:50px_50px] animate-[grid_60s_linear_infinite]" />
+      
+      {/* 顶部光晕 */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-neon-green/10 blur-[120px] rounded-full" />
+      
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-6xl relative z-10">
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold">AI Background Remover</h1>
+        <div className="flex justify-between items-center mb-16">
+          <h1 className="text-3xl md:text-4xl font-bold text-white">
+            AI <span className="text-neon-green">Background</span> Remover
+          </h1>
 
           <div className="flex items-center gap-3">
-            {/* T13: Pricing 链接 */}
-            <a href="/pricing" className="text-sm text-gray-500 hover:text-blue-600 hidden sm:block">
+            <a href="/pricing" className="text-sm text-gray-400 hover:text-neon-green transition-colors hidden sm:block">
               Pricing
             </a>
 
             {user ? (
               <>
-                {/* T09: 用量进度条 */}
                 {usage && (usage.limit !== null || usage.credits !== null) && (
                   <UsageBar
                     used={usage.used}
@@ -229,10 +235,10 @@ export default function Home() {
                     credits={usage.credits}
                   />
                 )}
-                <span className="text-sm text-gray-600 hidden sm:block">{user.name}</span>
+                <span className="text-sm text-gray-300 hidden sm:block">{user.name}</span>
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg"
+                  className="px-3 py-1.5 text-sm bg-tech-gray/60 backdrop-blur-sm text-white hover:bg-tech-gray border border-border-gray rounded-lg transition-all"
                 >
                   Sign Out
                 </button>
@@ -240,7 +246,7 @@ export default function Home() {
             ) : (
               <button
                 onClick={() => login()}
-                className="px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
+                className="px-4 py-2 text-sm bg-neon-green text-tech-black hover:shadow-[0_0_20px_rgba(0,255,136,0.4)] rounded-lg font-bold transition-all"
               >
                 Sign In
               </button>
@@ -248,17 +254,29 @@ export default function Home() {
           </div>
         </div>
 
-        <p className="text-center text-gray-600 mb-8 md:mb-12 text-sm md:text-base">
-          Remove background from your images in seconds
-        </p>
+        {/* Hero Section - 左对齐 */}
+        <div className="mb-12 max-w-2xl">
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+            Remove backgrounds<br />in <span className="text-neon-green">seconds</span>
+          </h2>
+          <p className="text-gray-400 text-lg md:text-xl">
+            AI-powered background removal. No design skills needed.
+          </p>
+        </div>
 
         {/* 主功能区 */}
         {!selectedFile ? (
           <ImageUploader onImageSelect={handleImageSelect} />
         ) : isProcessing ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Processing your image...</p>
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="relative w-20 h-20 mx-auto mb-6">
+                <div className="absolute inset-0 border-4 border-neon-green/20 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-neon-green border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <p className="text-white text-lg font-semibold">Processing your image...</p>
+              <p className="text-gray-400 text-sm mt-2">AI is removing the background</p>
+            </div>
           </div>
         ) : (
           <>
@@ -270,11 +288,11 @@ export default function Home() {
             />
             {/* 游客提示：结果为预览图 */}
             {!user && processedUrl && (
-              <p className="text-center text-xs text-gray-400 mt-3">
+              <p className="text-center text-sm text-gray-500 mt-4">
                 Preview quality ·{" "}
                 <button
                   onClick={() => setShowLoginPrompt(true)}
-                  className="text-blue-500 hover:underline"
+                  className="text-neon-green hover:underline font-semibold"
                 >
                   Sign in for free HD downloads
                 </button>
@@ -285,19 +303,19 @@ export default function Home() {
 
         {/* T11: 游客登录引导弹窗（优化版文案） */}
         {showLoginPrompt && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-8 max-w-md mx-4 shadow-xl">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-tech-gray/90 backdrop-blur-xl border border-border-gray rounded-3xl p-8 max-w-md mx-4 shadow-2xl">
               <div className="text-center mb-6">
-                <div className="text-4xl mb-3">{guestLimitReached ? "🔒" : "✨"}</div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <div className="text-5xl mb-4">{guestLimitReached ? "🔒" : "✨"}</div>
+                <h2 className="text-2xl font-bold text-white mb-3">
                   {guestLimitReached ? "Free downloads used up" : "Get free HD downloads"}
                 </h2>
-                <p className="text-gray-500 mt-2 text-sm">
+                <p className="text-gray-400 leading-relaxed">
                   {guestLimitReached ? (
-                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get 5 HD downloads/month for free.</>
+                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get <span className="text-neon-green font-semibold">5 HD downloads/month</span> for free.</>
                   ) : (
                     <>Sign in with Google — it&apos;s free. <br />
-                    Get <span className="font-semibold text-blue-600">5 HD downloads/month</span>, no watermark.</>
+                    Get <span className="text-neon-green font-semibold">5 HD downloads/month</span>, no watermark.</>
                   )}
                 </p>
               </div>
