@@ -21,7 +21,6 @@ declare global {
 }
 
 const PAYPAL_CLIENT_ID = "ASg9dZKDij_mPgJlatUTNiR8C1cavToO_8nGbN8KkFVP6MYZU5c1XRArdRIBLG80IzocYAIPs49tbO4W";
-const PRO_PLAN_ID = "P-6GU035748K5678354NHESEXI";
 
 interface UserInfo {
   id: string;
@@ -53,8 +52,8 @@ const plans = [
     name: "Credits Pack",
     price: "from $2.9",
     period: "one-time",
-    highlight: false,
-    badge: null,
+    highlight: true,
+    badge: "Popular",
     features: [
       "20 downloads — $2.9",
       "50 downloads — $5.9",
@@ -66,23 +65,6 @@ const plans = [
     ctaStyle: "bg-blue-600 text-white hover:bg-blue-700",
     paypalId: "credits",
   },
-  {
-    name: "Pro",
-    price: "$9.9",
-    period: "/ month",
-    highlight: true,
-    badge: "Popular",
-    features: [
-      "100 HD downloads / month",
-      "No watermark",
-      "Cancel anytime",
-      "Priority support",
-    ],
-    cta: "Subscribe",
-    ctaHref: "#pro",
-    ctaStyle: "bg-purple-600 text-white hover:bg-purple-700",
-    paypalId: "pro",
-  },
 ];
 
 export default function PricingPage() {
@@ -92,7 +74,6 @@ export default function PricingPage() {
   const [payStatus, setPayStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
   const [payMessage, setPayMessage] = useState("");
   const creditsBtnRef = useRef<HTMLDivElement>(null);
-  const proBtnRef = useRef<HTMLDivElement>(null);
 
   // 读取已登录用户
   useEffect(() => {
@@ -186,33 +167,6 @@ export default function PricingPage() {
         setPayMessage("Failed to load payment button");
       }
     }
-
-    // --- Pro 订阅按钮 ---
-    if (proBtnRef.current) {
-      proBtnRef.current.innerHTML = "";
-      try {
-        window.paypal.Buttons({
-        style: { layout: "vertical", color: "gold", shape: "rect", label: "subscribe" },
-        createSubscription: async (_data: unknown, actions: { subscription: { create: (opts: object) => Promise<string> } }) => {
-          if (!user) { alert("Please sign in first to subscribe."); throw new Error("Not signed in"); }
-          return actions.subscription.create({
-            plan_id: PRO_PLAN_ID,
-            custom_id: user.id,
-          });
-        },
-        onApprove: async (_data: { subscriptionID?: string }) => {
-          setPayStatus("success");
-          setPayMessage("🎉 Pro subscription activated! Check your email for confirmation.");
-        },
-        onError: () => {
-          setPayStatus("error");
-          setPayMessage("Subscription error. Please try again.");
-        },
-      }).render(proBtnRef.current);
-      } catch (error) {
-        console.error("Failed to render Pro button:", error);
-      }
-    }
   }, [sdkLoaded, selectedPack, user]);
 
   return (
@@ -245,15 +199,15 @@ export default function PricingPage() {
         )}
 
         {/* Plans */}
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
+        <div className="grid md:grid-cols-2 gap-6 mb-16 max-w-3xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={`relative bg-white rounded-2xl p-6 shadow-sm border-2 transition
-                ${plan.highlight ? "border-purple-400 shadow-purple-100 shadow-md" : "border-gray-100"}`}
+                ${plan.highlight ? "border-blue-400 shadow-blue-100 shadow-md" : "border-gray-100"}`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
                   {plan.badge}
                 </span>
               )}
@@ -308,13 +262,6 @@ export default function PricingPage() {
                   </div>
                 </div>
               )}
-
-              {/* Pro 套餐：PayPal 订阅按钮 */}
-              {plan.paypalId === "pro" && (
-                <div ref={proBtnRef} className="min-h-[45px]">
-                  {!sdkLoaded && <div className="text-center text-gray-400 text-sm py-3">Loading payment...</div>}
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -333,12 +280,12 @@ export default function PricingPage() {
                 a: "Each time you download a processed image (HD, no watermark) counts as one.",
               },
               {
-                q: "Can I cancel my Pro subscription anytime?",
-                a: "Yes, cancel anytime from your account. You keep access until the end of the billing period.",
-              },
-              {
                 q: "What's the difference between preview and HD?",
                 a: "Guests get a small preview image (~500px). Signed-in users get full-resolution HD output.",
+              },
+              {
+                q: "How do I get more downloads?",
+                a: "Free users get 20 downloads per month. Need more? Purchase a credits pack that never expires.",
               },
             ].map(({ q, a }) => (
               <div key={q} className="bg-white rounded-xl p-5 border border-gray-100">
