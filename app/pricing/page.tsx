@@ -170,20 +170,26 @@ export default function PricingPage() {
   }, [sdkLoaded, selectedPack, user]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="container mx-auto px-4 py-16 max-w-6xl">
 
         {/* Header */}
-        <div className="text-center mb-12">
-          <Link href="/" className="text-sm text-gray-500 hover:text-blue-600 mb-6 inline-block">
-            ← Back to app
+        <div className="text-center mb-16">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 mb-8 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to app
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Simple, transparent pricing</h1>
-          <p className="text-gray-500 text-lg">Start free. Upgrade when you need more.</p>
+          <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">Simple, transparent pricing</h1>
+          <p className="text-gray-600 text-xl max-w-2xl mx-auto">Start free. Upgrade when you need more.</p>
           {!user && (
-            <p className="text-sm text-amber-600 mt-3 bg-amber-50 inline-block px-4 py-2 rounded-lg">
-              ⚠️ Please <Link href="/" className="underline font-medium">sign in</Link> before purchasing
-            </p>
+            <div className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-amber-50 border border-amber-200 rounded-full text-amber-800 text-sm font-medium">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              Please <Link href="/" className="underline font-semibold hover:text-amber-900">sign in</Link> before purchasing
+            </div>
           )}
         </div>
 
@@ -199,32 +205,34 @@ export default function PricingPage() {
         )}
 
         {/* Plans */}
-        <div className="grid md:grid-cols-2 gap-6 mb-16 max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-white rounded-2xl p-6 shadow-sm border-2 transition
-                ${plan.highlight ? "border-blue-400 shadow-blue-100 shadow-md" : "border-gray-100"}`}
+              className={`relative bg-white rounded-3xl p-8 shadow-lg border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1
+                ${plan.highlight ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-200"}`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold px-6 py-2 rounded-full shadow-lg">
                   {plan.badge}
                 </span>
               )}
 
-              <div className="mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">{plan.name}</h2>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-400 text-sm">{plan.period}</span>
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">{plan.name}</h2>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                  <span className="text-gray-500 text-base">{plan.period}</span>
                 </div>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-4 mb-10">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                    <span className="text-green-500 mt-0.5">✓</span>
-                    {f}
+                  <li key={f} className="flex items-start gap-3 text-sm text-gray-700">
+                    <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>
@@ -233,7 +241,7 @@ export default function PricingPage() {
               {plan.paypalId === null && (
                 <a
                   href={plan.ctaHref}
-                  className={`block w-full text-center py-2.5 rounded-lg font-medium text-sm transition ${plan.ctaStyle}`}
+                  className={`block w-full text-center py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 ${plan.ctaStyle}`}
                 >
                   {plan.cta}
                 </a>
@@ -242,15 +250,15 @@ export default function PricingPage() {
               {/* Credits 套餐：档位选择 + PayPal 按钮 */}
               {plan.paypalId === "credits" && (
                 <div>
-                  <div className="flex gap-2 mb-4">
+                  <div className="flex gap-3 mb-6">
                     {(["20", "50"] as Pack[]).map((pack) => (
                       <button
                         key={pack}
                         onClick={() => setSelectedPack(pack)}
-                        className={`flex-1 py-2 rounded-lg text-sm font-medium border transition ${
+                        className={`flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition-all duration-200 ${
                           selectedPack === pack
-                            ? "border-blue-600 bg-blue-50 text-blue-700"
-                            : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                            ? "border-blue-600 bg-blue-50 text-blue-700 shadow-md"
+                            : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
                         }`}
                       >
                         {pack === "20" ? "20 for $2.9" : "50 for $5.9"}
@@ -267,9 +275,9 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">FAQ</h2>
-          <div className="space-y-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
+          <div className="space-y-5">
             {[
               {
                 q: "Do credits expire?",
@@ -288,9 +296,9 @@ export default function PricingPage() {
                 a: "Free users get 5 downloads per month. Need more? Purchase a credits pack that never expires.",
               },
             ].map(({ q, a }) => (
-              <div key={q} className="bg-white rounded-xl p-5 border border-gray-100">
-                <p className="font-medium text-gray-900 mb-1">{q}</p>
-                <p className="text-gray-500 text-sm">{a}</p>
+              <div key={q} className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all duration-200">
+                <p className="font-semibold text-gray-900 mb-2 text-base">{q}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{a}</p>
               </div>
             ))}
           </div>
