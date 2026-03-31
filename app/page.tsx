@@ -294,10 +294,10 @@ export default function Home() {
                 </h2>
                 <p className="text-gray-500 mt-2 text-sm">
                   {guestLimitReached ? (
-                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get 20 HD downloads/month for free.</>
+                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get 5 HD downloads/month for free.</>
                   ) : (
                     <>Sign in with Google — it&apos;s free. <br />
-                    Get <span className="font-semibold text-blue-600">20 HD downloads/month</span>, no watermark.</>
+                    Get <span className="font-semibold text-blue-600">5 HD downloads/month</span>, no watermark.</>
                   )}
                 </p>
               </div>

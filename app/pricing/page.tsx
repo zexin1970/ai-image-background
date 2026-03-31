@@ -38,7 +38,7 @@ const plans = [
     highlight: false,
     badge: null,
     features: [
-      "20 HD downloads / month",
+      "5 HD downloads / month",
       "No watermark",
       "Google sign-in required",
       "Preview quality for guests",
@@ -285,7 +285,7 @@ export default function PricingPage() {
               },
               {
                 q: "How do I get more downloads?",
-                a: "Free users get 20 downloads per month. Need more? Purchase a credits pack that never expires.",
+                a: "Free users get 5 downloads per month. Need more? Purchase a credits pack that never expires.",
               },
             ].map(({ q, a }) => (
               <div key={q} className="bg-white rounded-xl p-5 border border-gray-100">
