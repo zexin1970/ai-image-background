@@ -180,17 +180,21 @@ export default function PricingPage() {
       <div className="container mx-auto px-4 py-16 max-w-6xl relative z-10">
 
         {/* Header */}
-        <div className="mb-20">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-neon-green mb-12 transition-colors group">
-            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to app
-          </Link>
-          <h1 className="text-6xl font-bold text-white mb-6 tracking-tight">
-            Choose <span className="text-neon-green">Your</span> Plan
-          </h1>
-          <p className="text-gray-400 text-xl">Simple pricing. No hidden fees.</p>
+        <div className="mb-12">
+          <div className="flex justify-between items-start mb-8">
+            <div className="flex-1"></div>
+            <Link href="/" className="p-3 bg-tech-gray/60 backdrop-blur-sm border border-border-gray rounded-xl hover:border-neon-green/50 transition-all group">
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-neon-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </Link>
+          </div>
+          <div className="text-center">
+            <h1 className="text-6xl font-bold text-white tracking-tight inline">
+              Choose <span className="text-neon-green">Your</span> Plan
+            </h1>
+            <span className="text-gray-400 text-xl ml-4">Simple pricing. No hidden fees.</span>
+          </div>
           {!user && (
             <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 bg-electric-orange/10 border border-electric-orange/30 rounded-full text-electric-orange backdrop-blur-sm">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -213,7 +217,7 @@ export default function PricingPage() {
         )}
 
         {/* Plans */}
-        <div className="grid md:grid-cols-2 gap-8 mb-24">
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -283,8 +287,8 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div className="max-w-3xl">
-          <h2 className="text-4xl font-bold text-white mb-12">Frequently Asked Questions</h2>
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-4xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {[
               {
