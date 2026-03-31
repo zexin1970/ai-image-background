@@ -180,7 +180,7 @@ export default function PricingPage() {
       <div className="container mx-auto px-4 py-16 max-w-6xl relative z-10">
 
         {/* Header */}
-        <div className="text-center mb-20">
+        <div className="mb-20">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-neon-green mb-12 transition-colors group">
             <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -213,7 +213,7 @@ export default function PricingPage() {
         )}
 
         {/* Plans */}
-        <div className="grid md:grid-cols-2 gap-8 mb-24 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 mb-24">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -283,8 +283,8 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
+        <div className="max-w-3xl">
+          <h2 className="text-4xl font-bold text-white mb-12">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {[
               {
