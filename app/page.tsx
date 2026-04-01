@@ -21,7 +21,6 @@ interface UsageInfo {
   credits: number | null;
 }
 
-// 游客本地额度：每月最多 3 次免费下载（低清预览）
 const GUEST_MONTHLY_LIMIT = 3;
 
 function getGuestUsage(): { count: number; month: string } {
@@ -33,7 +32,7 @@ function getGuestUsage(): { count: number; month: string } {
 }
 
 function incrementGuestUsage(): number {
-  const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  const currentMonth = new Date().toISOString().slice(0, 7);
   const prev = getGuestUsage();
   const count = prev.month === currentMonth ? prev.count + 1 : 1;
   localStorage.setItem("guest_usage", JSON.stringify({ count, month: currentMonth }));
@@ -58,7 +57,6 @@ export default function Home() {
   const [guestLimitReached, setGuestLimitReached] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  // 拉取用量信息
   const fetchUsage = useCallback(async (uid: string) => {
     try {
       const res = await fetch(`/api/usage?user_id=${uid}`);
@@ -90,14 +88,12 @@ export default function Home() {
           localStorage.setItem("user", JSON.stringify(userInfo));
           setShowLoginPrompt(false);
 
-          // 保存用户到数据库
           fetch("/api/save-user", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(userInfo),
           });
 
-          // 拉取用量
           fetchUsage(userInfo.id);
         });
     },
@@ -113,7 +109,6 @@ export default function Home() {
     formData.append("image", file);
 
     try {
-      // T02: 登录用户携带 X-User-Id，游客不传 → worker 据此决定返回质量
       const headers: HeadersInit = {};
       if (user?.id) {
         headers["X-User-Id"] = user.id;
@@ -145,16 +140,13 @@ export default function Home() {
     }
   };
 
-  // T06: 下载前调 /api/download 检查额度
   const handleDownload = async () => {
     if (!user) {
       const remaining = getRemainingGuestDownloads();
       if (remaining <= 0) {
-        // 游客次数已用完，强制登录（不能跳过）
         setGuestLimitReached(true);
         setShowLoginPrompt(true);
       } else {
-        // 还有剩余次数，弹引导弹窗（可跳过）
         setGuestLimitReached(false);
         setShowLoginPrompt(true);
       }
@@ -169,7 +161,6 @@ export default function Home() {
       });
 
       if (res.status === 402) {
-        // 超额 → 弹升级弹窗
         setShowUpgradeModal(true);
         return;
       }
@@ -179,13 +170,11 @@ export default function Home() {
         return;
       }
 
-      // 通过额度检查，触发下载
       const a = document.createElement("a");
       a.href = processedUrl;
       a.download = `${selectedFile?.name.replace(/\.[^/.]+$/, "")}_removed_bg.png`;
       a.click();
 
-      // 刷新用量显示
       fetchUsage(user.id);
     } catch {
       alert("Download failed. Please try again.");
@@ -205,23 +194,23 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-tech-black relative overflow-hidden">
+    <main className="min-h-screen bg-bg-primary relative overflow-hidden">
       {/* 动态网格背景 */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(42,42,56,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(42,42,56,0.3)_1px,transparent_1px)] bg-[size:50px_50px] animate-[grid_60s_linear_infinite]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(48,54,61,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(48,54,61,0.3)_1px,transparent_1px)] bg-[size:50px_50px]" />
       
       {/* 顶部光晕 */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-neon-green/10 blur-[120px] rounded-full" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-primary/10 blur-[120px] rounded-full" />
       
-      <div className="container mx-auto px-4 py-8 md:py-12 max-w-6xl relative z-10">
+      <div className="container mx-auto px-4 py-6 max-w-6xl relative z-10">
 
-        {/* Header */}
-        <div className="flex justify-between items-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-bold text-white">
-            AI <span className="text-neon-green">Background</span> Remover
+        {/* Header - 增强导航 */}
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+            AI <span className="text-brand-primary">Background</span> Remover
           </h1>
 
-          <div className="flex items-center gap-3">
-            <a href="/pricing" className="text-sm text-gray-400 hover:text-neon-green transition-colors hidden sm:block">
+          <div className="flex items-center gap-4">
+            <a href="/pricing" className="text-sm text-text-secondary hover:text-brand-primary transition-colors hidden sm:block">
               Pricing
             </a>
 
@@ -235,10 +224,10 @@ export default function Home() {
                     credits={usage.credits}
                   />
                 )}
-                <span className="text-sm text-gray-300 hidden sm:block">{user.name}</span>
+                <span className="text-sm text-text-primary hidden sm:block">{user.name}</span>
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-1.5 text-sm bg-tech-gray/60 backdrop-blur-sm text-white hover:bg-tech-gray border border-border-gray rounded-lg transition-all"
+                  className="px-3 py-1.5 text-sm bg-bg-secondary/60 backdrop-blur-sm text-text-primary hover:bg-bg-tertiary border border-border-default rounded-lg transition-all"
                 >
                   Sign Out
                 </button>
@@ -246,7 +235,7 @@ export default function Home() {
             ) : (
               <button
                 onClick={() => login()}
-                className="px-4 py-2 text-sm bg-neon-green text-tech-black hover:shadow-[0_0_20px_rgba(0,255,136,0.4)] rounded-lg font-bold transition-all"
+                className="px-4 py-2 text-sm bg-brand-primary text-bg-primary hover:shadow-glow-brand rounded-lg font-bold transition-all"
               >
                 Sign In
               </button>
@@ -254,13 +243,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hero Section - 左对齐 */}
-        <div className="mb-12 max-w-2xl">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Remove backgrounds<br />in <span className="text-neon-green">seconds</span>
+        {/* Hero Section */}
+        <div className="mb-10 max-w-2xl">
+          <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-4 leading-tight">
+            Remove backgrounds<br />in <span className="text-brand-primary">seconds</span>
           </h2>
-          <p className="text-gray-400 text-lg md:text-xl">
-            AI-powered background removal. No design skills needed.
+          <p className="text-text-secondary text-lg">
+            AI-powered. No design skills needed.
           </p>
         </div>
 
@@ -271,11 +260,11 @@ export default function Home() {
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="relative w-20 h-20 mx-auto mb-6">
-                <div className="absolute inset-0 border-4 border-neon-green/20 rounded-full"></div>
-                <div className="absolute inset-0 border-4 border-neon-green border-t-transparent rounded-full animate-spin"></div>
+                <div className="absolute inset-0 border-4 border-brand-primary/20 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
-              <p className="text-white text-lg font-semibold">Processing your image...</p>
-              <p className="text-gray-400 text-sm mt-2">AI is removing the background</p>
+              <p className="text-text-primary text-lg font-semibold">Processing your image...</p>
+              <p className="text-text-secondary text-sm mt-2">AI is removing the background</p>
             </div>
           </div>
         ) : (
@@ -286,13 +275,12 @@ export default function Home() {
               onDownload={handleDownload}
               onReset={handleReset}
             />
-            {/* 游客提示：结果为预览图 */}
             {!user && processedUrl && (
-              <p className="text-center text-sm text-gray-500 mt-4">
+              <p className="text-center text-sm text-text-muted mt-4">
                 Preview quality ·{" "}
                 <button
                   onClick={() => setShowLoginPrompt(true)}
-                  className="text-neon-green hover:underline font-semibold"
+                  className="text-brand-primary hover:underline font-semibold"
                 >
                   Sign in for free HD downloads
                 </button>
@@ -301,21 +289,21 @@ export default function Home() {
           </>
         )}
 
-        {/* T11: 游客登录引导弹窗（优化版文案） */}
+        {/* 登录引导弹窗 */}
         {showLoginPrompt && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-tech-gray/90 backdrop-blur-xl border border-border-gray rounded-3xl p-8 max-w-md mx-4 shadow-2xl">
+            <div className="bg-bg-secondary/90 backdrop-blur-xl border border-border-default rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
               <div className="text-center mb-6">
                 <div className="text-5xl mb-4">{guestLimitReached ? "🔒" : "✨"}</div>
-                <h2 className="text-2xl font-bold text-white mb-3">
+                <h2 className="text-2xl font-bold text-text-primary mb-3">
                   {guestLimitReached ? "Free downloads used up" : "Get free HD downloads"}
                 </h2>
-                <p className="text-gray-400 leading-relaxed">
+                <p className="text-text-secondary leading-relaxed">
                   {guestLimitReached ? (
-                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get <span className="text-neon-green font-semibold">5 HD downloads/month</span> for free.</>
+                    <>You&apos;ve used all {GUEST_MONTHLY_LIMIT} free guest downloads this month.<br />Sign in to get <span className="text-brand-primary font-semibold">5 HD downloads/month</span> for free.</>
                   ) : (
                     <>Sign in with Google — it&apos;s free. <br />
-                    Get <span className="text-neon-green font-semibold">5 HD downloads/month</span>, no watermark.</>
+                    Get <span className="text-brand-primary font-semibold">5 HD downloads/month</span>, no watermark.</>
                   )}
                 </p>
               </div>
@@ -324,7 +312,6 @@ export default function Home() {
                   <button
                     onClick={() => {
                       setShowLoginPrompt(false);
-                      // 游客跳过登录，扣减本地次数后下载预览图（低清）
                       if (processedUrl) {
                         incrementGuestUsage();
                         const a = document.createElement("a");
@@ -333,7 +320,7 @@ export default function Home() {
                         a.click();
                       }
                     }}
-                    className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
+                    className="flex-1 px-4 py-2.5 border border-border-default rounded-lg text-text-secondary hover:bg-bg-tertiary text-sm transition-all"
                   >
                     Maybe later ({getRemainingGuestDownloads()} left)
                   </button>
@@ -341,14 +328,14 @@ export default function Home() {
                 {guestLimitReached && (
                   <button
                     onClick={() => setShowLoginPrompt(false)}
-                    className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
+                    className="flex-1 px-4 py-2.5 border border-border-default rounded-lg text-text-secondary hover:bg-bg-tertiary text-sm transition-all"
                   >
                     Cancel
                   </button>
                 )}
                 <button
                   onClick={() => login()}
-                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+                  className="flex-1 px-4 py-2.5 bg-brand-primary text-bg-primary rounded-lg hover:shadow-glow-brand font-medium text-sm transition-all"
                 >
                   Sign in with Google
                 </button>
@@ -357,7 +344,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* T07: 超额升级弹窗 */}
+        {/* 超额升级弹窗 */}
         {showUpgradeModal && usage && (
           <UpgradeModal
             used={usage.used}

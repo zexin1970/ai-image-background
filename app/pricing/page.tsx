@@ -40,23 +40,21 @@ const plans = [
     features: [
       "5 HD downloads / month",
       "No watermark",
-      "Google sign-in required",
       "Preview quality for guests",
     ],
     cta: "Get Started",
     ctaHref: "/",
     ctaStyle: "border border-gray-300 text-gray-700 hover:bg-gray-50",
     paypalId: null,
+    note: "Google sign-in required",
   },
   {
     name: "Credits Pack",
-    price: "from $2.9",
-    period: "one-time",
+    price: "$2.9",
+    period: "起",
     highlight: true,
-    badge: "Popular",
+    badge: "MOST POPULAR",
     features: [
-      "20 downloads — $2.9",
-      "50 downloads — $5.9",
       "Never expires",
       "No subscription needed",
     ],
@@ -64,6 +62,7 @@ const plans = [
     ctaHref: "#credits",
     ctaStyle: "bg-blue-600 text-white hover:bg-blue-700",
     paypalId: "credits",
+    note: null,
   },
 ];
 
@@ -89,11 +88,9 @@ export default function PricingPage() {
     script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&vault=true&currency=USD`;
     script.setAttribute("data-sdk-integration-source", "button-factory");
     script.onload = () => {
-      console.log("PayPal SDK loaded");
       setSdkLoaded(true);
     };
     script.onerror = () => {
-      console.error("Failed to load PayPal SDK");
       setPayStatus("error");
       setPayMessage("Failed to load payment system");
     };
@@ -105,14 +102,8 @@ export default function PricingPage() {
 
   // 渲染 PayPal 按钮
   useEffect(() => {
-    if (!sdkLoaded || !window.paypal) {
-      console.log("SDK not ready:", { sdkLoaded, hasPaypal: !!window.paypal });
-      return;
-    }
+    if (!sdkLoaded || !window.paypal) return;
 
-    console.log("Rendering PayPal buttons");
-
-    // --- Credits 按钮 ---
     if (creditsBtnRef.current) {
       creditsBtnRef.current.innerHTML = "";
       try {
@@ -130,19 +121,16 @@ export default function PricingPage() {
           return data.order_id;
         },
         onApprove: async (data: { orderID: string }) => {
-          console.log("Payment approved, orderID:", data.orderID);
           try {
             const res = await fetch("/api/paypal/capture-order", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ order_id: data.orderID, user_id: user!.id, pack: selectedPack }),
             });
-            console.log("Capture response status:", res.status);
             const result = await res.json() as { success: boolean; credits_added: number };
-            console.log("Capture result:", result);
             if (result.success) {
               setPayStatus("success");
-              setPayMessage(`✅ ${result.credits_added} credits added! Redirecting to home...`);
+              setPayMessage(`✅ ${result.credits_added} credits added! Redirecting...`);
               setTimeout(() => {
                 window.location.href = "/";
               }, 2000);
@@ -151,7 +139,6 @@ export default function PricingPage() {
               setPayMessage("Payment failed. Please try again.");
             }
           } catch (error) {
-            console.error("Capture error:", error);
             setPayStatus("error");
             setPayMessage("Payment processing failed: " + String(error));
           }
@@ -162,7 +149,6 @@ export default function PricingPage() {
         },
       }).render(creditsBtnRef.current);
       } catch (error) {
-        console.error("Failed to render Credits button:", error);
         setPayStatus("error");
         setPayMessage("Failed to load payment button");
       }
@@ -170,78 +156,79 @@ export default function PricingPage() {
   }, [sdkLoaded, selectedPack, user]);
 
   return (
-    <main className="min-h-screen bg-tech-black relative overflow-hidden">
+    <main className="min-h-screen bg-bg-primary relative overflow-hidden">
       {/* 动态网格背景 */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(42,42,56,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(42,42,56,0.3)_1px,transparent_1px)] bg-[size:50px_50px] animate-[grid_60s_linear_infinite]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(48,54,61,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(48,54,61,0.3)_1px,transparent_1px)] bg-[size:50px_50px]" />
       
       {/* 顶部光晕 */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-neon-green/10 blur-[120px] rounded-full" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-brand-primary/10 blur-[120px] rounded-full" />
       
-      <div className="container mx-auto px-4 py-16 max-w-6xl relative z-10">
+      <div className="container mx-auto px-4 py-8 max-w-5xl relative z-10">
 
-        {/* Header */}
-        <div className="mb-12">
-          <div className="flex justify-between items-start mb-8">
-            <div className="flex-1"></div>
-            <Link href="/" className="p-3 bg-tech-gray/60 backdrop-blur-sm border border-border-gray rounded-xl hover:border-neon-green/50 transition-all group">
-              <svg className="w-5 h-5 text-gray-400 group-hover:text-neon-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* Header - 压缩版 */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-baseline gap-3">
+              <h1 className="text-2xl font-bold text-text-primary">Choose Your Plan</h1>
+              <span className="text-text-secondary text-sm">Simple pricing. No hidden fees.</span>
+            </div>
+            <Link href="/" className="p-2 bg-bg-secondary/60 backdrop-blur-sm border border-border-default rounded-lg hover:border-brand-primary/50 transition-all group">
+              <svg className="w-5 h-5 text-text-secondary group-hover:text-brand-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </Link>
           </div>
-          <div className="text-center">
-            <h1 className="text-6xl font-bold text-white tracking-tight inline">
-              Choose <span className="text-neon-green">Your</span> Plan
-            </h1>
-            <span className="text-gray-400 text-xl ml-4">Simple pricing. No hidden fees.</span>
-          </div>
+          
+          {/* 警告条 - 右上角浮动 toast */}
           {!user && (
-            <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 bg-electric-orange/10 border border-electric-orange/30 rounded-full text-electric-orange backdrop-blur-sm">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 bg-warning/10 border border-warning/30 rounded-lg text-warning backdrop-blur-sm text-sm shadow-lg">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              <span className="font-medium">Please <Link href="/" className="underline font-bold hover:text-white transition-colors">sign in</Link> before purchasing</span>
+              <span>Please <Link href="/" className="underline font-semibold hover:text-text-primary">sign in</Link> first</span>
             </div>
           )}
         </div>
 
-        {/* 支付状态提示 */}
+        {/* 支付状态提示 - 行内显示 */}
         {payStatus !== "idle" && (
-          <div className={`mb-10 p-5 rounded-2xl text-center font-semibold backdrop-blur-sm border ${
-            payStatus === "success" ? "bg-neon-green/10 text-neon-green border-neon-green/30" :
-            payStatus === "error" ? "bg-electric-orange/10 text-electric-orange border-electric-orange/30" :
-            "bg-tech-gray/60 text-gray-300 border-border-gray"
+          <div className={`mb-4 p-3 rounded-lg text-sm font-medium backdrop-blur-sm border ${
+            payStatus === "success" ? "bg-success/10 text-success border-success/30" :
+            payStatus === "error" ? "bg-error/10 text-error border-error/30" :
+            "bg-bg-secondary/60 text-text-secondary border-border-default"
           }`}>
-            {payStatus === "processing" ? "⏳ Processing payment..." : payMessage}
+            {payStatus === "processing" ? "⏳ Processing..." : payMessage}
           </div>
         )}
 
-        {/* Plans */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        {/* Plans - 双卡片并排 */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative bg-tech-gray/60 backdrop-blur-xl rounded-3xl p-8 border transition-all duration-300 hover:-translate-y-2 group
-                ${plan.highlight ? "border-neon-green/50 shadow-[0_0_40px_rgba(0,255,136,0.2)]" : "border-border-gray hover:border-neon-green/30"}`}
+              className={`relative bg-bg-secondary/60 backdrop-blur-xl rounded-2xl p-6 border transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover group
+                ${plan.highlight ? "border-brand-primary/50 shadow-glow-brand" : "border-border-default hover:border-brand-primary/30"}`}
             >
               {plan.badge && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neon-green to-green-400 text-tech-black text-sm font-bold px-6 py-2 rounded-full shadow-lg">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-primary to-brand-light text-bg-primary text-xs font-bold px-4 py-1 rounded-full shadow-lg">
                   🔥 {plan.badge}
                 </div>
               )}
 
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-white mb-3">{plan.name}</h2>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-white">{plan.price}</span>
-                  <span className="text-gray-400 text-lg">{plan.period}</span>
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-text-primary mb-2">{plan.name}</h2>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-bold text-text-primary">{plan.price}</span>
+                  <span className="text-text-secondary text-base">{plan.period}</span>
                 </div>
               </div>
 
-              <ul className="space-y-4 mb-10">
+              <div className="border-t border-border-default my-4"></div>
+
+              <ul className="space-y-2 mb-6">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-gray-300 group-hover:text-white transition-colors">
-                    <svg className="w-5 h-5 text-neon-green flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <li key={f} className="flex items-start gap-2 text-text-secondary text-sm group-hover:text-text-primary transition-colors">
+                    <svg className="w-4 h-4 text-brand-primary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     <span>{f}</span>
@@ -249,68 +236,78 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              {/* Free 套餐：普通链接按钮 */}
+              {/* Credits 套餐：选择数量 */}
+              {plan.paypalId === "credits" && (
+                <div className="mb-4">
+                  <p className="text-text-secondary text-sm mb-2">选择数量:</p>
+                  <div className="space-y-2">
+                    {(["20", "50"] as Pack[]).map((pack) => (
+                      <label key={pack} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="pack"
+                          value={pack}
+                          checked={selectedPack === pack}
+                          onChange={() => setSelectedPack(pack)}
+                          className="w-4 h-4 text-brand-primary focus:ring-brand-primary"
+                        />
+                        <span className="text-text-primary text-sm">
+                          {pack === "20" ? "20次 - $2.9" : "50次 - $5.9"}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Free 套餐：普通按钮 */}
               {plan.paypalId === null && (
                 <a
                   href={plan.ctaHref}
-                  className="block w-full text-center py-4 rounded-xl font-bold text-white border-2 border-white/20 hover:border-neon-green hover:bg-neon-green/10 transition-all duration-200"
+                  className="block w-full text-center py-3 rounded-lg font-semibold text-text-primary border-2 border-border-default hover:border-brand-primary hover:bg-brand-primary/10 transition-all duration-200 text-sm"
                 >
                   {plan.cta}
                 </a>
               )}
 
-              {/* Credits 套餐：档位选择 + PayPal 按钮 */}
+              {/* Credits 套餐：PayPal 按钮 */}
               {plan.paypalId === "credits" && (
-                <div>
-                  <div className="flex gap-3 mb-6">
-                    {(["20", "50"] as Pack[]).map((pack) => (
-                      <button
-                        key={pack}
-                        onClick={() => setSelectedPack(pack)}
-                        className={`flex-1 py-3 rounded-xl font-bold border-2 transition-all duration-200 ${
-                          selectedPack === pack
-                            ? "border-neon-green bg-neon-green text-tech-black shadow-[0_0_20px_rgba(0,255,136,0.4)]"
-                            : "border-border-gray text-gray-400 hover:border-neon-green/50 hover:text-white"
-                        }`}
-                      >
-                        {pack === "20" ? "20 for $2.9" : "50 for $5.9"}
-                      </button>
-                    ))}
-                  </div>
-                  <div ref={creditsBtnRef} className="min-h-[45px]">
-                    {!sdkLoaded && <div className="text-center text-gray-500 text-sm py-3">Loading payment...</div>}
-                  </div>
+                <div ref={creditsBtnRef} className="min-h-[45px]">
+                  {!sdkLoaded && <div className="text-center text-text-muted text-xs py-3">Loading payment...</div>}
                 </div>
+              )}
+
+              {/* 底部备注 */}
+              {plan.note && (
+                <p className="text-text-muted text-xs text-center mt-3">{plan.note}</p>
+              )}
+
+              {/* 信任标识 */}
+              {plan.paypalId === "credits" && (
+                <p className="text-text-muted text-xs text-center mt-3 flex items-center justify-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  安全支付
+                </p>
               )}
             </div>
           ))}
         </div>
 
-        {/* FAQ */}
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
-          <div className="space-y-4">
+        {/* FAQ - 紧凑版 */}
+        <div className="max-w-3xl mx-auto mt-12">
+          <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">FAQ</h2>
+          <div className="space-y-3">
             {[
-              {
-                q: "Do credits expire?",
-                a: "No. Credits you purchase never expire — use them at your own pace.",
-              },
-              {
-                q: "What counts as one download?",
-                a: "Each time you download a processed image (HD, no watermark) counts as one.",
-              },
-              {
-                q: "What's the difference between preview and HD?",
-                a: "Guests get a small preview image (~500px). Signed-in users get full-resolution HD output.",
-              },
-              {
-                q: "How do I get more downloads?",
-                a: "Free users get 5 downloads per month. Need more? Purchase a credits pack that never expires.",
-              },
+              { q: "Do credits expire?", a: "No. Credits never expire." },
+              { q: "What counts as one download?", a: "Each HD download counts as one." },
+              { q: "Preview vs HD?", a: "Guests get ~500px preview. Signed-in users get full HD." },
+              { q: "Need more downloads?", a: "Free: 5/month. Buy credits for unlimited." },
             ].map(({ q, a }) => (
-              <div key={q} className="bg-tech-gray/60 backdrop-blur-xl rounded-2xl p-6 border border-border-gray hover:border-neon-green/30 transition-all duration-200">
-                <p className="font-bold text-white mb-2 text-lg">{q}</p>
-                <p className="text-gray-400 leading-relaxed">{a}</p>
+              <div key={q} className="bg-bg-secondary/60 backdrop-blur-xl rounded-lg p-4 border border-border-default hover:border-brand-primary/30 transition-all duration-200">
+                <p className="font-semibold text-text-primary mb-1 text-sm">{q}</p>
+                <p className="text-text-secondary text-xs leading-relaxed">{a}</p>
               </div>
             ))}
           </div>

@@ -44,7 +44,7 @@ async function sendEmail(apiKey: string, to: string, subject: string, html: stri
     },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
-      from: { email: "noreply@image-bg.shop", name: "AI Background Remover" },
+      from: { email: "noreply@example.com", name: "AI Background Remover" },
       subject,
       content: [{ type: "text/html", value: html }],
     }),
@@ -117,10 +117,7 @@ export async function onRequestPost(context: { request: Request; env: Env }) {
           <p>Hi ${user.name || "there"},</p>
           <p>Your purchase of <strong>${packInfo.label}</strong> (${packInfo.amount}) has been confirmed.</p>
           <p><strong>${packInfo.credits} download credits</strong> have been added to your account — they never expire.</p>
-          <a href="https://image-bg.shop" style="display:inline-block;margin-top:16px;padding:10px 20px;background:#1d4ed8;color:white;border-radius:8px;text-decoration:none">
-            Start Downloading →
-          </a>
-          <p style="color:#9ca3af;font-size:12px;margin-top:24px">AI Background Remover · image-bg.shop</p>
+          <p style="color:#9ca3af;font-size:12px;margin-top:24px">AI Background Remover</p>
         </div>
         `
       );
